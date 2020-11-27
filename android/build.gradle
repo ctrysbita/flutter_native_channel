@@ -1,0 +1,51 @@
+group 'io.xdea.flutter_native_channel'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    ext.kotlin_version = '1.4.10'
+    repositories {
+        google()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:4.0.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion 29
+    ndkVersion '21.3.6528147'
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+    defaultConfig {
+        minSdkVersion 16
+    }
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+
+    // Include JNI C++ code.
+    externalNativeBuild {
+        cmake {
+            path "./src/main/jni/CMakeLists.txt"
+        }
+    }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
