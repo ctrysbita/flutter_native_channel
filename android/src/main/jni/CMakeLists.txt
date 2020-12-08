@@ -7,4 +7,5 @@ add_library(
         # Provides a relative path to your source file(s).
         jni_helper.h
         jni_helper.cc
+        synchronized_channel.cc
 )

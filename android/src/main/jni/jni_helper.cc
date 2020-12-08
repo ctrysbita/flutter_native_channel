@@ -18,8 +18,7 @@ void JniHelper::StoreClassLoader() {
       class_loader_class, "findClass", "(Ljava/lang/String;)Ljava/lang/Class;");
 }
 
-jclass JniHelper::FindClass(const char *name) {
-  JniEnv env;
+jclass JniHelper::FindClass(JniEnv &env, const char *name) {
   return reinterpret_cast<jclass>(env->CallObjectMethod(
       JniHelper::class_loader_, JniHelper::find_class_method_,
       env->NewStringUTF(name)));
