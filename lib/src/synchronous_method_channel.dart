@@ -75,7 +75,9 @@ class SynchronousMethodChannel {
   T? invokeMethod<T>(String method, [dynamic arguments]) {
     var encodedMethodCall =
         codec.encodeMethodCall(MethodCall(method, arguments));
-    var result = messenger.send(id, encodedMethodCall.buffer.asUint8List());
+    var message = encodedMethodCall.buffer
+        .asUint8List(0, encodedMethodCall.lengthInBytes);
+    var result = messenger.send(id, message);
     return codec.decodeEnvelope(ByteData.view(result.buffer)) as T;
   }
 }
