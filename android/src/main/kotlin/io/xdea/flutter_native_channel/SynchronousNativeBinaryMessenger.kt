@@ -20,14 +20,14 @@ import io.flutter.Log
 import java.nio.ByteBuffer
 import java.security.MessageDigest
 
-class SynchronizedNativeBinaryMessenger {
+class SynchronousNativeBinaryMessenger {
     companion object {
         @JvmStatic
         private val TAG = "NativeBinaryMessenger"
 
-        private val messageHandlers = HashMap<Long, SynchronizedBinaryMessageHandler>()
+        private val messageHandlers = HashMap<Long, SynchronousBinaryMessageHandler>()
 
-        fun setMessageHandler(channel: String, handler: SynchronizedBinaryMessageHandler?) {
+        fun setMessageHandler(channel: String, handler: SynchronousBinaryMessageHandler?) {
             val channelMd5 = MessageDigest.getInstance("MD5").digest(channel.toByteArray())
             var channelDigest: Long = 0
             for (i in channelMd5.take(8)) {
@@ -35,19 +35,21 @@ class SynchronizedNativeBinaryMessenger {
             }
 
             if (handler == null) {
-                Log.v(TAG, "Removing synchronized handler for channel $channelDigest '$channel'")
+                Log.v(TAG, "Removing synchronous handler for channel $channelDigest '$channel'")
                 messageHandlers.remove(channelDigest)
             } else {
-                Log.v(TAG, "Setting synchronized handler for channel $channelDigest '$channel'")
+                Log.v(TAG, "Setting synchronous handler for channel $channelDigest '$channel'")
                 messageHandlers[channelDigest] = handler
             }
         }
 
         /**
          * Call from native to handle message from dart.
+         *
+         * The message will be freed after return. DO NOT return message itself without copy.
          */
         @JvmStatic
-        fun handleMessageFromDart(channel: Long, message: ByteBuffer?): ByteBuffer? {
+        private fun handleMessageFromDart(channel: Long, message: ByteBuffer?): ByteBuffer? {
             Log.v(TAG, "Received message from Dart over channel $channel")
             val handler = messageHandlers[channel]
             return if (handler != null) {

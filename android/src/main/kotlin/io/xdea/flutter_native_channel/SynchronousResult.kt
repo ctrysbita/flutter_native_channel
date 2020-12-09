@@ -21,9 +21,9 @@ import io.flutter.plugin.common.StandardMessageCodec
 import java.nio.ByteBuffer
 
 /**
- * Represent result of a method call in [SynchronizedMethodChannel].
+ * Represent result of a method call in [SynchronousMethodChannel].
  */
-class SynchronizedResult private constructor(private val type: Type) {
+class SynchronousResult private constructor(private val type: Type) {
     private enum class Type {
         Success,
         Error,
@@ -44,8 +44,8 @@ class SynchronizedResult private constructor(private val type: Type) {
          * codec. For instance, if you are using [StandardMessageCodec] (default), please see
          * its documentation on what types are supported.
          */
-        fun success(result: Any?): SynchronizedResult {
-            return SynchronizedResult(Type.Success).apply {
+        fun success(result: Any?): SynchronousResult {
+            return SynchronousResult(Type.Success).apply {
                 this.result = result
             }
         }
@@ -59,8 +59,8 @@ class SynchronizedResult private constructor(private val type: Type) {
          * supported by the codec. For instance, if you are using [StandardMessageCodec]
          * (default), please see its documentation on what types are supported.
          */
-        fun error(errorCode: String?, errorMessage: String?, errorDetails: Any?): SynchronizedResult {
-            return SynchronizedResult(Type.Error).apply {
+        fun error(errorCode: String?, errorMessage: String?, errorDetails: Any?): SynchronousResult {
+            return SynchronousResult(Type.Error).apply {
                 this.errorCode = errorCode
                 this.errorMessage = errorMessage
                 this.errorDetails = errorDetails
@@ -68,8 +68,8 @@ class SynchronizedResult private constructor(private val type: Type) {
         }
 
         /** Create a call to an unimplemented method. */
-        fun notImplemented(): SynchronizedResult {
-            return SynchronizedResult(Type.Unimplemented)
+        fun notImplemented(): SynchronousResult {
+            return SynchronousResult(Type.Unimplemented)
         }
     }
 

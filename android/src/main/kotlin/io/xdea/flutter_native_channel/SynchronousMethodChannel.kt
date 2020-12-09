@@ -28,7 +28,7 @@ import java.nio.ByteBuffer
 
 
 /**
- * A named channel for communicating with the Flutter application using synchronized method calls.
+ * A named channel for communicating with the Flutter application using synchronous method calls.
  *
  *
  * Incoming method calls are decoded from binary on receipt, and Java results are encoded into
@@ -41,13 +41,13 @@ import java.nio.ByteBuffer
  * The logical identity of the channel is given by its name. Identically named channels will
  * interfere with each other's communication.
  */
-class SynchronizedMethodChannel
+class SynchronousMethodChannel
 @JvmOverloads
 constructor(private val name: String,
             private val codec: MethodCodec = StandardMethodCodec.INSTANCE) {
 
     companion object {
-        private const val TAG = "SynchronizedMethodChannel#"
+        private const val TAG = "SynchronousMethodChannel#"
     }
 
     /**
@@ -64,7 +64,7 @@ constructor(private val name: String,
      */
     @UiThread
     fun setMethodCallHandler(handler: MethodCallHandler?) {
-        SynchronizedNativeBinaryMessenger.setMessageHandler(
+        SynchronousNativeBinaryMessenger.setMessageHandler(
                 name, if (handler == null) null else IncomingMethodCallHandler(handler))
     }
 
@@ -76,19 +76,19 @@ constructor(private val name: String,
          *
          * Handler implementations must return a result for all incoming calls. Failure to do so
          * will result in lingering Flutter result handlers. Calls to unknown or unimplemented
-         * methods should be handled using [SynchronizedResult.notImplemented].
+         * methods should be handled using [SynchronousResult.notImplemented].
          *
          * Any uncaught exception thrown by this method will be caught by the channel implementation
          * and logged, and an error result will be sent back to Flutter.
          *
          * @param call A [MethodCall].
-         * @return A [SynchronizedResult] used for submitting the result of the call.
+         * @return A [SynchronousResult] used for submitting the result of the call.
          */
-        fun onMethodCall(call: MethodCall): SynchronizedResult
+        fun onMethodCall(call: MethodCall): SynchronousResult
     }
 
     private inner class IncomingMethodCallHandler
-    constructor(private val handler: MethodCallHandler) : SynchronizedBinaryMessageHandler {
+    constructor(private val handler: MethodCallHandler) : SynchronousBinaryMessageHandler {
         @UiThread
         override fun onMessage(message: ByteBuffer?): ByteBuffer? {
             val call = codec.decodeMethodCall(message)

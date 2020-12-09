@@ -18,6 +18,6 @@ package io.xdea.flutter_native_channel
 
 import java.nio.ByteBuffer
 
-interface SynchronizedBinaryMessageHandler {
+interface SynchronousBinaryMessageHandler {
     fun onMessage(message: ByteBuffer?): ByteBuffer?
 }
