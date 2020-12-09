@@ -10,7 +10,7 @@ extern "C" struct SynchronousResultWrapper {
 
 extern "C" __attribute__((visibility("default"))) __attribute__((used))
 struct SynchronousResultWrapper *
-SendSynchronousMessageToPlatform(int64_t channel, uint32_t length,
+SendSynchronousMessageToPlatform(int64_t channel, uint64_t length,
                                  uint8_t *data) {
   JniEnv env;
 

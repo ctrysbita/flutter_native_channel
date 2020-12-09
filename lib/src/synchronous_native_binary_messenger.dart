@@ -19,8 +19,8 @@ import 'package:ffi/ffi.dart';
 
 import 'dynamic_library.dart';
 
-var _sendSynchronousMessageToPlatform = nativeLib.lookupFunction<
-    Pointer<SynchronousResultWrapper> Function(Int64, Uint32, Pointer<Uint8>),
+final _sendSynchronousMessageToPlatform = nativeLib.lookupFunction<
+    Pointer<SynchronousResultWrapper> Function(Int64, Uint64, Pointer<Uint8>),
     Pointer<SynchronousResultWrapper> Function(
         int, int, Pointer<Uint8>)>("SendSynchronousMessageToPlatform");
 
