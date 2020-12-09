@@ -3,8 +3,13 @@
 static jclass handle_message_from_dart_class = nullptr;
 static jmethodID handle_message_from_dart_method = nullptr;
 
+extern "C" struct SynchronousResultWrapper {
+  int64_t length;
+  uint8_t *data;
+};
+
 extern "C" __attribute__((visibility("default"))) __attribute__((used))
-uint8_t *
+struct SynchronousResultWrapper *
 SendSynchronousMessageToPlatform(int64_t channel, uint32_t length,
                                  uint8_t *data) {
   JniEnv env;
@@ -23,14 +28,13 @@ SendSynchronousMessageToPlatform(int64_t channel, uint32_t length,
   jobject result = env->CallStaticObjectMethod(handle_message_from_dart_class,
                                                handle_message_from_dart_method,
                                                channel, message);
-  jbyte *ret = nullptr;
-  jlong cap;
+
+  auto ret = new struct SynchronousResultWrapper;
   if (result != nullptr) {
-    ret = (jbyte *) env->GetDirectBufferAddress(result);
-    cap = env->GetDirectBufferCapacity(result);
+    ret->data = (uint8_t *) env->GetDirectBufferAddress(result);
+    ret->length = env->GetDirectBufferCapacity(result);
   }
 
-  // TODO: Return capacity.
   // TODO: Handle GC.
-  return (uint8_t *) ret;
+  return ret;
 }

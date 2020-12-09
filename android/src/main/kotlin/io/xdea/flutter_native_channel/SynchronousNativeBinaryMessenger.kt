@@ -23,23 +23,17 @@ import java.security.MessageDigest
 class SynchronousNativeBinaryMessenger {
     companion object {
         @JvmStatic
-        private val TAG = "NativeBinaryMessenger"
+        private val TAG = "SynchronousNativeBinaryMessenger#"
 
         private val messageHandlers = HashMap<Long, SynchronousBinaryMessageHandler>()
 
-        fun setMessageHandler(channel: String, handler: SynchronousBinaryMessageHandler?) {
-            val channelMd5 = MessageDigest.getInstance("MD5").digest(channel.toByteArray())
-            var channelDigest: Long = 0
-            for (i in channelMd5.take(8)) {
-                channelDigest = channelDigest.shl(8).or(i.toLong())
-            }
-
+        fun setMessageHandler(channel: Long, handler: SynchronousBinaryMessageHandler?) {
             if (handler == null) {
-                Log.v(TAG, "Removing synchronous handler for channel $channelDigest '$channel'")
-                messageHandlers.remove(channelDigest)
+                Log.v(TAG, "Removing synchronous handler for channel $channel")
+                messageHandlers.remove(channel)
             } else {
-                Log.v(TAG, "Setting synchronous handler for channel $channelDigest '$channel'")
-                messageHandlers[channelDigest] = handler
+                Log.v(TAG, "Setting synchronous handler for channel $channel")
+                messageHandlers[channel] = handler
             }
         }
 

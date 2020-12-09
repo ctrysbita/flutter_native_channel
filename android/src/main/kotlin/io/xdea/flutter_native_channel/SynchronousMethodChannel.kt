@@ -25,6 +25,7 @@ import java.io.PrintWriter
 import java.io.StringWriter
 import java.io.Writer
 import java.nio.ByteBuffer
+import java.security.MessageDigest
 
 
 /**
@@ -43,8 +44,20 @@ import java.nio.ByteBuffer
  */
 class SynchronousMethodChannel
 @JvmOverloads
-constructor(private val name: String,
+constructor(val name: String,
+            private var id: Long? = null,
             private val codec: MethodCodec = StandardMethodCodec.INSTANCE) {
+
+    init {
+        if (id == null) {
+            val channelMd5 = MessageDigest.getInstance("MD5").digest(name.toByteArray())
+            var channelDigest: Long = 0
+            for (i in channelMd5.take(8)) {
+                channelDigest = channelDigest.shl(8).or(i.toLong())
+            }
+            id = channelDigest
+        }
+    }
 
     companion object {
         private const val TAG = "SynchronousMethodChannel#"
@@ -64,8 +77,8 @@ constructor(private val name: String,
      */
     @UiThread
     fun setMethodCallHandler(handler: MethodCallHandler?) {
-        SynchronousNativeBinaryMessenger.setMessageHandler(
-                name, if (handler == null) null else IncomingMethodCallHandler(handler))
+        val msgHandler = if (handler == null) null else IncomingMethodCallHandler(handler)
+        SynchronousNativeBinaryMessenger.setMessageHandler(id!!, msgHandler)
     }
 
 
