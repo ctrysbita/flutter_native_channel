@@ -1,5 +1,8 @@
 #pragma once
 
+// Annotate functions that exported via dart FFI.
+#define FFI_EXPORT extern "C" __attribute__((visibility("default"))) __attribute__((used))
+
 #include <jni.h>
 
 class JniEnv {

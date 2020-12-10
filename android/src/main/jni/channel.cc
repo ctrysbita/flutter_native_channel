@@ -8,8 +8,7 @@ static jmethodID handle_message_from_dart_method_ = nullptr;
 static Dart_Port_DL replyPort_;
 static Dart_Port_DL messagePort_;
 
-extern "C" __attribute__((visibility("default"))) __attribute__((used)) void
-InitializeApiDL(void *data, int64_t replyPort, int64_t messagePort) {
+FFI_EXPORT void InitializeApiDL(void *data, int64_t replyPort, int64_t messagePort) {
   Dart_InitializeApiDL(data);
   replyPort_ = replyPort;
   messagePort_ = messagePort;
@@ -21,14 +20,13 @@ extern "C" struct MessageWrapper {
   uint8_t *data;
 };
 
-extern "C" __attribute__((visibility("default"))) __attribute__((used)) void
-SendMessageToPlatform(int64_t channel, int64_t seq, uint64_t length,
-                      uint8_t *data) {
+FFI_EXPORT void SendMessageToPlatform(int64_t channel, int64_t seq, uint64_t length,
+                                      uint8_t *data) {
   JniEnv env;
 
   if (handle_message_from_dart_class_ == nullptr) {
     handle_message_from_dart_class_ =
-        (jclass)env->NewGlobalRef(JniHelper::FindClass(
+        (jclass) env->NewGlobalRef(JniHelper::FindClass(
             env, "io/xdea/flutter_native_channel/NativeBinaryMessenger"));
     handle_message_from_dart_method_ = env->GetStaticMethodID(
         handle_message_from_dart_class_, "handleMessageFromDart",

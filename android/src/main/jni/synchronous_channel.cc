@@ -8,15 +8,14 @@ extern "C" struct SynchronousResultWrapper {
   uint8_t *data;
 };
 
-extern "C" __attribute__((visibility("default"))) __attribute__((used))
-struct SynchronousResultWrapper *
+FFI_EXPORT struct SynchronousResultWrapper *
 SendSynchronousMessageToPlatform(int64_t channel, uint64_t length,
                                  uint8_t *data) {
   JniEnv env;
 
   if (handle_message_from_dart_class_ == nullptr) {
     handle_message_from_dart_class_ =
-        (jclass) env->NewGlobalRef(JniHelper::FindClass(
+        (jclass)env->NewGlobalRef(JniHelper::FindClass(
             env,
             "io/xdea/flutter_native_channel/SynchronousNativeBinaryMessenger"));
     handle_message_from_dart_method_ = env->GetStaticMethodID(
@@ -31,7 +30,7 @@ SendSynchronousMessageToPlatform(int64_t channel, uint64_t length,
 
   auto ret = new struct SynchronousResultWrapper;
   if (result != nullptr) {
-    ret->data = (uint8_t *) env->GetDirectBufferAddress(result);
+    ret->data = static_cast<uint8_t *>(env->GetDirectBufferAddress(result));
     ret->length = env->GetDirectBufferCapacity(result);
   }
 
