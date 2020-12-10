@@ -18,7 +18,6 @@ package io.xdea.flutter_native_channel
 
 import io.flutter.Log
 import java.nio.ByteBuffer
-import java.security.MessageDigest
 
 class SynchronousNativeBinaryMessenger {
     companion object {

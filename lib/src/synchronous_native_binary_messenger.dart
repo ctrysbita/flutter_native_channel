@@ -39,7 +39,7 @@ class SynchronousNativeBinaryMessenger {
   ///
   /// Returns a [Pointer<Uint8>] of received response, undecoded, in binary
   /// form.
-  Uint8List send(int channel, Uint8List? message) {
+  Uint8List? send(int channel, Uint8List? message) {
     var msgPtr = Pointer<Uint8>.fromAddress(0);
     var length = 0;
     if (message != null) {
@@ -50,7 +50,8 @@ class SynchronousNativeBinaryMessenger {
 
     var wrappedResult =
         _sendSynchronousMessageToPlatform(channel, length, msgPtr);
-    var result = wrappedResult.ref.data;
+    var result =
+        wrappedResult.ref._data.address == 0 ? null : wrappedResult.ref.data;
     free(msgPtr);
     free(wrappedResult);
     return result;

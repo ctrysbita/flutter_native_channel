@@ -78,6 +78,9 @@ class SynchronousMethodChannel {
     var message = encodedMethodCall.buffer
         .asUint8List(0, encodedMethodCall.lengthInBytes);
     var result = messenger.send(id, message);
-    return codec.decodeEnvelope(ByteData.view(result.buffer)) as T;
+
+    return result == null
+        ? null
+        : codec.decodeEnvelope(ByteData.view(result.buffer)) as T;
   }
 }
