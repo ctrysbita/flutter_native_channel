@@ -8,7 +8,7 @@ static jmethodID handle_message_from_dart_method_ = nullptr;
 static Dart_Port_DL replyPort_;
 static Dart_Port_DL messagePort_;
 
-FFI_EXPORT void InitializeApiDL(void *data, int64_t replyPort, int64_t messagePort) {
+FFI_EXPORT void InitializeChannel(void *data, int64_t replyPort, int64_t messagePort) {
   Dart_InitializeApiDL(data);
   replyPort_ = replyPort;
   messagePort_ = messagePort;

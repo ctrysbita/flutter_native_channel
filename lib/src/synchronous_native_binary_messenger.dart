@@ -29,6 +29,7 @@ class SynchronousResultWrapper extends Struct {
   external int length;
 
   external Pointer<Uint8> _data;
+
   Uint8List get data => _data.asTypedList(length);
 }
 

@@ -14,6 +14,8 @@
 
 import 'package:flutter/services.dart';
 
+export 'src/native_binary_messenger.dart';
+export 'src/native_method_channel.dart';
 export 'src/synchronous_method_channel.dart';
 export 'src/synchronous_native_binary_messenger.dart';
 
