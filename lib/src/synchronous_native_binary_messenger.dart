@@ -22,7 +22,7 @@ import 'dynamic_library.dart';
 final _sendSynchronousMessageToPlatform = nativeLib.lookupFunction<
     Pointer<SynchronousResultWrapper> Function(Int64, Uint64, Pointer<Uint8>),
     Pointer<SynchronousResultWrapper> Function(
-        int, int, Pointer<Uint8>)>("SendSynchronousMessageToPlatform");
+        int, int, Pointer<Uint8>)>('SendSynchronousMessageToPlatform');
 
 class SynchronousResultWrapper extends Struct {
   @Int64()
