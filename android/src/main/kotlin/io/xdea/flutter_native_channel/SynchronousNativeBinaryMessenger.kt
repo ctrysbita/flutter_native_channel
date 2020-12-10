@@ -38,9 +38,10 @@ class SynchronousNativeBinaryMessenger {
         }
 
         /**
-         * Call from native to handle message from dart.
+         * Call from native to handle synchronous message from dart.
          *
-         * The message will be freed after return. DO NOT return message itself without copy.
+         * The message will be freed and become no longer available after return. DO NOT return
+         * message itself without copy.
          */
         @JvmStatic
         private fun handleMessageFromDart(channel: Long, message: ByteBuffer?): ByteBuffer? {

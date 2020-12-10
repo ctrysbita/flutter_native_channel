@@ -13,10 +13,32 @@
 // limitations under the License.
 
 import 'dart:ffi';
-
 import 'dart:io';
+import 'dart:isolate';
+
+import 'native_binary_channel.dart';
 
 /// The native library of channel.
 final nativeLib = Platform.isIOS
     ? DynamicLibrary.process()
     : DynamicLibrary.open('libflutter_native_channel.so');
+
+final _initializeApiDl = nativeLib.lookupFunction<
+    IntPtr Function(Pointer<Void>, Int64, Int64),
+    int Function(Pointer<Void>, int, int)>("InitializeApiDL");
+
+final replyPort = ReceivePort();
+final messagePort = ReceivePort();
+
+// ignore: unused_element
+final Null _initializedApiDl = () {
+  _initializeApiDl(
+    NativeApi.initializeApiDLData,
+    replyPort.sendPort.nativePort,
+    messagePort.sendPort.nativePort,
+  );
+  replyPort.listen((dynamic msg) => NativeBinaryMessenger.instance
+      .onReply(Pointer<MessageWrapper>.fromAddress(msg as int)));
+  messagePort.listen((dynamic msg) => NativeBinaryMessenger.instance
+      .onMessage(Pointer<MessageWrapper>.fromAddress(msg as int)));
+}();
