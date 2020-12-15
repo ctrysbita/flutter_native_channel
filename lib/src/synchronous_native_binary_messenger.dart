@@ -29,8 +29,12 @@ class SynchronousResultWrapper extends Struct {
   external int length;
 
   external Pointer<Uint8> _data;
+}
 
-  Uint8List get data => _data.asTypedList(length);
+extension _SynchronousResultWrapperHelper on Pointer<SynchronousResultWrapper> {
+  bool get isNull => ref._data.address == 0;
+
+  Uint8List get data => ref._data.asTypedList(ref.length);
 }
 
 class SynchronousNativeBinaryMessenger {
@@ -51,10 +55,11 @@ class SynchronousNativeBinaryMessenger {
 
     var wrappedResult =
         _sendSynchronousMessageToPlatform(channel, length, msgPtr);
-    var result =
-        wrappedResult.ref._data.address == 0 ? null : wrappedResult.ref.data;
+
+    var result = wrappedResult.isNull ? null : wrappedResult.data;
     free(msgPtr);
     free(wrappedResult);
+
     return result;
   }
 }

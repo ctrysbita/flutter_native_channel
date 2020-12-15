@@ -16,8 +16,8 @@ import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_native_channel/flutter_native_channel.dart';
-import 'package:flutter_native_channel/src/synchronous_native_binary_messenger.dart';
+
+import 'concurrent_native_binary_messenger.dart';
 
 /// A named channel for communicating with platform plugins using concurrent
 /// method calls.
@@ -44,7 +44,7 @@ class ConcurrentMethodChannel {
     return channelDigest;
   }
 
-  /// Creates a [MethodChannel] with the specified [name].
+  /// Creates a [ConcurrentMethodChannel] with the specified [name].
   ///
   /// The [codec] used will be [StandardMethodCodec], unless otherwise
   /// specified.
@@ -52,21 +52,21 @@ class ConcurrentMethodChannel {
     this.name, {
     int? id,
     this.codec = const StandardMethodCodec(),
-    NativeBinaryMessenger? messenger,
+    ConcurrentNativeBinaryMessenger? messenger,
   })  : id = id ?? _computeChannelId(name),
-        messenger = messenger ?? NativeBinaryMessenger.instance;
+        messenger = messenger ?? ConcurrentNativeBinaryMessenger.instance;
 
   /// The logical channel on which communication happens, not null.
   final String name;
 
-  /// The ID used by [SynchronousNativeBinaryMessenger].
+  /// The ID used by [ConcurrentNativeBinaryMessenger].
   final int id;
 
   /// The message codec used by this channel, not null.
   final MethodCodec codec;
 
   /// The messenger that send the method call for result.
-  final NativeBinaryMessenger messenger;
+  final ConcurrentNativeBinaryMessenger messenger;
 
   /// Invokes a [method] on this channel with the specified [arguments].
   ///

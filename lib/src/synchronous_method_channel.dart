@@ -16,7 +16,8 @@ import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_native_channel/src/synchronous_native_binary_messenger.dart';
+
+import 'synchronous_native_binary_messenger.dart';
 
 /// A named channel for communicating with platform plugins using synchronous
 /// method calls.
@@ -43,7 +44,7 @@ class SynchronousMethodChannel {
     return channelDigest;
   }
 
-  /// Creates a [MethodChannel] with the specified [name].
+  /// Creates a [SynchronousMethodChannel] with the specified [name].
   ///
   /// The [codec] used will be [StandardMethodCodec], unless otherwise
   /// specified.

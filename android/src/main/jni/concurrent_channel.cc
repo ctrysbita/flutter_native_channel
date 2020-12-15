@@ -37,7 +37,7 @@ struct TaskMessageWrapper {
 static std::mutex message_queue_mtx_;
 static std::queue<struct TaskMessageWrapper> message_queue_;
 
-[[noreturn]] void SendMessageToPlatformWorker() {
+[[noreturn]] void SendConcurrentMessageToPlatformWorker() {
   while (true) {
     {
       std::unique_lock<std::mutex> lck(cv_mtx_);
@@ -74,11 +74,11 @@ FFI_EXPORT void InitializeChannel(void *data, int64_t replyPort, int64_t message
 
   auto concurrency = std::max(std::thread::hardware_concurrency() / 2, 1u);
   for (unsigned i = 0; i < concurrency; i++) {
-    threads_.emplace_back(SendMessageToPlatformWorker);
+    threads_.emplace_back(SendConcurrentMessageToPlatformWorker);
   }
 }
 
-FFI_EXPORT void SendMessageToPlatform(int64_t channel, int64_t seq, int64_t length,
+FFI_EXPORT void SendConcurrentMessageToPlatform(int64_t channel, int64_t seq, int64_t length,
                                       uint8_t *data) {
   message_queue_mtx_.lock();
   message_queue_.push({channel, {seq, length, data}});

@@ -28,9 +28,10 @@ final _initializeChannel = nativeLib.lookupFunction<
     Void Function(Pointer<Void>, Int64, Int64),
     void Function(Pointer<Void>, int, int)>("InitializeChannel");
 
-final _sendMessageToPlatform = nativeLib.lookupFunction<
+final _sendConcurrentMessageToPlatform = nativeLib.lookupFunction<
     Void Function(Int64, Int64, Int64, Pointer<Uint8>),
-    void Function(int, int, int, Pointer<Uint8>)>('SendMessageToPlatform');
+    void Function(
+        int, int, int, Pointer<Uint8>)>('SendConcurrentMessageToPlatform');
 
 class MessageWrapper extends Struct {
   @Int64()
@@ -40,8 +41,12 @@ class MessageWrapper extends Struct {
   external int length;
 
   external Pointer<Uint8> _data;
+}
 
-  Uint8List get data => _data.asTypedList(length);
+extension _MessageWrapperHelper on Pointer<MessageWrapper> {
+  bool get isNull => ref._data.address == 0;
+
+  Uint8List get data => ref._data.asTypedList(ref.length);
 }
 
 class ConcurrentNativeBinaryMessenger {
@@ -81,24 +86,26 @@ class ConcurrentNativeBinaryMessenger {
       msgPtr.asTypedList(message.length).setAll(0, message);
     }
 
-    _sendMessageToPlatform(channel, seq, length, msgPtr);
+    _sendConcurrentMessageToPlatform(channel, seq, length, msgPtr);
 
     return completer.future;
   }
 
-  void onReply(Pointer<MessageWrapper> reply) async {
-    var seq = reply.ref.seq;
+  void onReply(Pointer<MessageWrapper> wrappedResult) async {
+    var seq = wrappedResult.ref.seq;
     assert(
       _resultCompleters.containsKey(seq),
-      'Missing completer while receving reply for seq $seq',
+      'Missing completer while receving result for seq $seq',
     );
 
-    _resultCompleters[seq]
-        ?.complete(reply.ref._data.address == 0 ? null : reply.ref.data);
-    _resultCompleters.remove(seq);
+    _resultCompleters
+        .remove(seq)
+        ?.complete(wrappedResult.isNull ? null : wrappedResult.data);
 
-    free(reply);
+    free(wrappedResult);
   }
 
-  void onMessage(Pointer<MessageWrapper> message) async {}
+  void onMessage(Pointer<MessageWrapper> message) async {
+    throw UnimplementedError();
+  }
 }
