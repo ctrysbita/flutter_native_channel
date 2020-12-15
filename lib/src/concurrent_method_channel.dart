@@ -19,7 +19,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_native_channel/flutter_native_channel.dart';
 import 'package:flutter_native_channel/src/synchronous_native_binary_messenger.dart';
 
-/// A named channel for communicating with platform plugins using asynchronous
+/// A named channel for communicating with platform plugins using concurrent
 /// method calls.
 ///
 /// Method calls are encoded into binary before being sent, and binary results
@@ -34,7 +34,7 @@ import 'package:flutter_native_channel/src/synchronous_native_binary_messenger.d
 ///
 /// The logical identity of the channel is given by its name. Identically named
 /// channels will interfere with each other's communication.
-class NativeMethodChannel {
+class ConcurrentMethodChannel {
   static int _computeChannelId(String name) {
     var channelMd5 = md5.convert(utf8.encode(name)).bytes;
     var channelDigest = 0;
@@ -48,7 +48,7 @@ class NativeMethodChannel {
   ///
   /// The [codec] used will be [StandardMethodCodec], unless otherwise
   /// specified.
-  NativeMethodChannel(
+  ConcurrentMethodChannel(
     this.name, {
     int? id,
     this.codec = const StandardMethodCodec(),

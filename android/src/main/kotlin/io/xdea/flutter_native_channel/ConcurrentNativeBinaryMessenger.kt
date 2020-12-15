@@ -6,7 +6,7 @@ import io.flutter.plugin.common.BinaryMessenger.BinaryReply
 import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
 
-class NativeBinaryMessenger {
+class ConcurrentNativeBinaryMessenger {
     companion object {
         @JvmStatic
         private val TAG = "SynchronousNativeBinaryMessenger#"

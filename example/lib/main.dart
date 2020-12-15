@@ -6,7 +6,7 @@ import 'package:flutter_native_channel/flutter_native_channel.dart';
 const channel = MethodChannel('flutter_native_channel_example');
 final synchronousChannel =
     SynchronousMethodChannel('flutter_native_channel_example');
-final nativeChannel = NativeMethodChannel('flutter_native_channel_example');
+final nativeChannel = ConcurrentMethodChannel('flutter_native_channel_example');
 
 void main() {
   runApp(MyApp());
@@ -54,7 +54,7 @@ class _MyAppState extends State<MyApp> {
 
     ts = DateTime.now();
     for (var i = 0; i < 20; i++) {
-      await NativeBinaryMessenger.instance.send(1234, null);
+      await ConcurrentNativeBinaryMessenger.instance.send(1234, null),
     }
     asyncBinTs = DateTime.now().difference(ts).inMicroseconds;
 

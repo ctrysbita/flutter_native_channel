@@ -42,11 +42,9 @@ import java.security.MessageDigest
  * The logical identity of the channel is given by its name. Identically named channels will
  * interfere with each other's communication.
  */
-class SynchronousMethodChannel
-@JvmOverloads
-constructor(val name: String,
-            private var id: Long? = null,
-            private val codec: MethodCodec = StandardMethodCodec.INSTANCE) {
+class SynchronousMethodChannel constructor(val name: String,
+                                           private var id: Long? = null,
+                                           private val codec: MethodCodec = StandardMethodCodec.INSTANCE) {
 
     init {
         if (id == null) {
@@ -100,8 +98,8 @@ constructor(val name: String,
         fun onMethodCall(call: MethodCall): SynchronousResult
     }
 
-    private inner class IncomingMethodCallHandler
-    constructor(private val handler: MethodCallHandler) : SynchronousBinaryMessageHandler {
+    private inner class IncomingMethodCallHandler(private val handler: MethodCallHandler)
+        : SynchronousNativeBinaryMessenger.SynchronousBinaryMessageHandler {
         @UiThread
         override fun onMessage(message: ByteBuffer?): ByteBuffer? {
             val call = codec.decodeMethodCall(message)

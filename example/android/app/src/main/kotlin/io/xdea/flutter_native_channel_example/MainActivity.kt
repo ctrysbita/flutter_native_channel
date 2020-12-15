@@ -11,7 +11,7 @@ import java.nio.ByteBuffer
 class MainActivity : FlutterActivity(), MethodChannel.MethodCallHandler {
     private lateinit var channel: MethodChannel
     private lateinit var synchronousChannel: SynchronousMethodChannel
-    private lateinit var nativeMethodChannel: NativeMethodChannel
+    private lateinit var concurrentMethodChannel: ConcurrentMethodChannel
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -24,11 +24,13 @@ class MainActivity : FlutterActivity(), MethodChannel.MethodCallHandler {
         }
 
         // Sync, Native, Bin
-        SynchronousNativeBinaryMessenger.setMessageHandler(1234, object : SynchronousBinaryMessageHandler {
-            override fun onMessage(message: ByteBuffer?): ByteBuffer? {
-                return ByteBuffer.wrap(ByteArray(1024 * 1024 * 5))
-            }
-        })
+        SynchronousNativeBinaryMessenger.setMessageHandler(1234,
+                object : SynchronousNativeBinaryMessenger.SynchronousBinaryMessageHandler {
+                    override fun onMessage(message: ByteBuffer?): ByteBuffer? {
+                        return ByteBuffer.wrap(ByteArray(1024 * 1024 * 5))
+                    }
+                }
+        )
 
         // Sync, Native, Method
         synchronousChannel = SynchronousMethodChannel("flutter_native_channel_example")
@@ -39,13 +41,13 @@ class MainActivity : FlutterActivity(), MethodChannel.MethodCallHandler {
         })
 
         // Async, Native, Bin
-        NativeBinaryMessenger.setMessageHandler(1234) { _, reply ->
+        ConcurrentNativeBinaryMessenger.setMessageHandler(1234) { _, reply ->
             reply.reply(ByteBuffer.wrap(ByteArray(1024 * 1024 * 5)))
         }
 
         // Async, Native, Method
-        nativeMethodChannel = NativeMethodChannel("flutter_native_channel_example")
-        nativeMethodChannel.setMethodCallHandler(this)
+        concurrentMethodChannel = ConcurrentMethodChannel("flutter_native_channel_example")
+        concurrentMethodChannel.setMethodCallHandler(this)
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {

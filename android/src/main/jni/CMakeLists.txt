@@ -10,6 +10,6 @@ add_library(
         include/dart/dart_api_dl.c
         jni_helper.h
         jni_helper.cc
-        channel.cc
+        concurrent_channel.cc
         synchronous_channel.cc
 )

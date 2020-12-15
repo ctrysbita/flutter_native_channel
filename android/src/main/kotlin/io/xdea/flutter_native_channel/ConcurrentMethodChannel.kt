@@ -30,7 +30,7 @@ import java.nio.ByteBuffer
 import java.security.MessageDigest
 
 /**
- * A named channel for communicating with the Flutter application using asynchronous method calls.
+ * A named channel for communicating with the Flutter application using concurrent method calls.
  *
  *
  * Incoming method calls are decoded from binary on receipt, and Java results are encoded into
@@ -43,9 +43,9 @@ import java.security.MessageDigest
  * The logical identity of the channel is given by its name. Identically named channels will
  * interfere with each other's communication.
  */
-class NativeMethodChannel constructor(val name: String,
-                                      private var id: Long? = null,
-                                      private val codec: MethodCodec? = StandardMethodCodec.INSTANCE) {
+class ConcurrentMethodChannel constructor(val name: String,
+                                          private var id: Long? = null,
+                                          private val codec: MethodCodec? = StandardMethodCodec.INSTANCE) {
 
     init {
         if (id == null) {
@@ -59,7 +59,7 @@ class NativeMethodChannel constructor(val name: String,
     }
 
     companion object {
-        private const val TAG = "NativeMethodChannel#"
+        private const val TAG = "ConcurrentMethodChannel#"
     }
 
     /**
@@ -77,7 +77,7 @@ class NativeMethodChannel constructor(val name: String,
     @UiThread
     fun setMethodCallHandler(handler: MethodChannel.MethodCallHandler?) {
         val msgHandler = if (handler == null) null else IncomingMethodCallHandler(handler)
-        NativeBinaryMessenger.setMessageHandler(id!!, msgHandler)
+        ConcurrentNativeBinaryMessenger.setMessageHandler(id!!, msgHandler)
     }
 
     private inner class IncomingMethodCallHandler constructor(
@@ -100,12 +100,16 @@ class NativeMethodChannel constructor(val name: String,
                             override fun notImplemented() {
                                 reply.reply(null)
                             }
-                        })
+                        }
+                )
             } catch (e: RuntimeException) {
                 Log.e(TAG + name, "Failed to handle method call", e)
-                reply.reply(
-                        codec.encodeErrorEnvelopeWithStacktrace(
-                                "error", e.message, null, getStackTrace(e)))
+                reply.reply(codec.encodeErrorEnvelopeWithStacktrace(
+                        "error",
+                        e.message,
+                        null,
+                        getStackTrace(e)
+                ))
             }
         }
 

@@ -54,4 +54,8 @@ class SynchronousNativeBinaryMessenger {
             }
         }
     }
+
+    interface SynchronousBinaryMessageHandler {
+        fun onMessage(message: ByteBuffer?): ByteBuffer?
+    }
 }

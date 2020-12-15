@@ -19,7 +19,3 @@ import 'dart:io';
 final nativeLib = Platform.isIOS
     ? DynamicLibrary.process()
     : DynamicLibrary.open('libflutter_native_channel.so');
-
-final initializeChannel = nativeLib.lookupFunction<
-    Void Function(Pointer<Void>, Int64, Int64),
-    void Function(Pointer<Void>, int, int)>("InitializeChannel");

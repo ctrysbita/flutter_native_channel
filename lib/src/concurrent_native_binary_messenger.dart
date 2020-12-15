@@ -24,8 +24,12 @@ import 'dynamic_library.dart';
 
 final _resultCompleters = HashMap<int, Completer<Uint8List?>>();
 
+final _initializeChannel = nativeLib.lookupFunction<
+    Void Function(Pointer<Void>, Int64, Int64),
+    void Function(Pointer<Void>, int, int)>("InitializeChannel");
+
 final _sendMessageToPlatform = nativeLib.lookupFunction<
-    Void Function(Int64, Int64, Uint64, Pointer<Uint8>),
+    Void Function(Int64, Int64, Int64, Pointer<Uint8>),
     void Function(int, int, int, Pointer<Uint8>)>('SendMessageToPlatform');
 
 class MessageWrapper extends Struct {
@@ -40,18 +44,19 @@ class MessageWrapper extends Struct {
   Uint8List get data => _data.asTypedList(length);
 }
 
-class NativeBinaryMessenger {
+class ConcurrentNativeBinaryMessenger {
   static final _replyPort = ReceivePort();
   static final _messagePort = ReceivePort();
 
-  static final NativeBinaryMessenger instance = NativeBinaryMessenger._();
+  static final ConcurrentNativeBinaryMessenger instance =
+      ConcurrentNativeBinaryMessenger._();
 
   /// The sequence number of messages that is used to identify result completer.
   static var _seq = 1;
 
   /// Initialize channel and register callbacks.
-  NativeBinaryMessenger._() {
-    initializeChannel(
+  ConcurrentNativeBinaryMessenger._() {
+    _initializeChannel(
       NativeApi.initializeApiDLData,
       _replyPort.sendPort.nativePort,
       _messagePort.sendPort.nativePort,

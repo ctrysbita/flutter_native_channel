@@ -12,13 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:flutter/services.dart';
-
-export 'src/native_binary_messenger.dart';
-export 'src/native_method_channel.dart';
+export 'src/concurrent_method_channel.dart';
+export 'src/concurrent_native_binary_messenger.dart';
 export 'src/synchronous_method_channel.dart';
 export 'src/synchronous_native_binary_messenger.dart';
-
-class FlutterNativeChannel {
-  static const MethodChannel _channel = MethodChannel('flutter_native_channel');
-}
