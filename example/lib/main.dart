@@ -54,7 +54,7 @@ class _MyAppState extends State<MyApp> {
 
     ts = DateTime.now();
     for (var i = 0; i < 20; i++) {
-      await ConcurrentNativeBinaryMessenger.instance.send(1234, null),
+      await ConcurrentNativeBinaryMessenger.instance.send(1234, null);
     }
     asyncBinTs = DateTime.now().difference(ts).inMicroseconds;
 

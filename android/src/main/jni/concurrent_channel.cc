@@ -1,8 +1,25 @@
+/**
+ * Copyright 2020 Jason C.H <ctrysbita@outlook.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#include <algorithm>
 #include <malloc.h>
+#include <mutex>
+#include <queue>
 #include <thread>
 #include <vector>
-#include <queue>
-#include <algorithm>
 
 #include "dart/dart_api_dl.h"
 #include "jni_helper.h"
@@ -40,8 +57,8 @@ static std::queue<struct TaskMessageWrapper> message_queue_;
 [[noreturn]] void SendConcurrentMessageToPlatformWorker() {
   while (true) {
     {
-      std::unique_lock<std::mutex> lck(cv_mtx_);
-      cv_.wait(lck, []() { return !message_queue_.empty(); });
+      std::unique_lock<std::mutex> lock(cv_mtx_);
+      cv_.wait(lock, []() { return !message_queue_.empty(); });
     }
 
     message_queue_mtx_.lock();
@@ -79,10 +96,11 @@ FFI_EXPORT void InitializeChannel(void *data, int64_t replyPort, int64_t message
 }
 
 FFI_EXPORT void SendConcurrentMessageToPlatform(int64_t channel, int64_t seq, int64_t length,
-                                      uint8_t *data) {
-  message_queue_mtx_.lock();
-  message_queue_.push({channel, {seq, length, data}});
-  message_queue_mtx_.unlock();
+                                                uint8_t *data) {
+  {
+    std::lock_guard<std::mutex> lock(message_queue_mtx_);
+    message_queue_.push({channel, {seq, length, data}});
+  }
 
   cv_.notify_one();
 }
