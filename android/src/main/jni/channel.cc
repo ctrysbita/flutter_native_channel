@@ -41,7 +41,7 @@ FFI_EXPORT void SendMessageToPlatform(int64_t channel, int64_t seq, uint64_t len
 
 extern "C" JNIEXPORT void
 Java_io_xdea_flutter_1native_1channel_NativeBinaryMessenger_replyMessageToDart(
-    JNIEnv *env, jclass clazz, jint reply_id, jobject reply, jobject message) {
+    JNIEnv *env, jclass clazz, jlong reply_id, jobject reply, jobject message) {
   // Free request message.
   if (message != nullptr) {
     free(env->GetDirectBufferAddress(message));

@@ -30,7 +30,7 @@ class NativeBinaryMessenger {
          * message itself without copy.
          */
         @JvmStatic
-        private fun handleMessageFromDart(channel: Long, message: ByteBuffer?, seq: Int) {
+        private fun handleMessageFromDart(channel: Long, message: ByteBuffer?, seq: Long) {
             Log.v(TAG, "Received message from Dart over channel $channel")
             val handler = messageHandlers[channel]
             if (handler != null) {
@@ -48,10 +48,10 @@ class NativeBinaryMessenger {
         }
 
         @JvmStatic
-        private external fun replyMessageToDart(replyId: Int, reply: ByteBuffer?, message: ByteBuffer?)
+        private external fun replyMessageToDart(replyId: Long, reply: ByteBuffer?, message: ByteBuffer?)
     }
 
-    internal class Reply(private val replyId: Int, private val message: ByteBuffer?) : BinaryReply {
+    internal class Reply(private val replyId: Long, private val message: ByteBuffer?) : BinaryReply {
         private val done = AtomicBoolean(false)
 
         override fun reply(reply: ByteBuffer?) {
