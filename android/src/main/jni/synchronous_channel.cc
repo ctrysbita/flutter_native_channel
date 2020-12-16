@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include "finalizer.h"
 #include "jni_helper.h"
 
 static jclass handle_message_from_dart_class_ = nullptr;
@@ -48,8 +49,8 @@ SendSynchronousMessageToPlatform(int64_t channel, uint64_t length,
   if (result != nullptr) {
     ret->data = static_cast<uint8_t *>(env->GetDirectBufferAddress(result));
     ret->length = env->GetDirectBufferCapacity(result);
+    Finalizer::AssociatePointerWithGlobalReference(ret->data, env->NewGlobalRef(result));
   }
 
-  // TODO: Handle GC.
   return ret;
 }

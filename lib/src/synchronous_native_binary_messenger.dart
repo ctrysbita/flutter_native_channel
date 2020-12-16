@@ -56,7 +56,12 @@ class SynchronousNativeBinaryMessenger {
     var wrappedResult =
         _sendSynchronousMessageToPlatform(channel, length, msgPtr);
 
-    var result = wrappedResult.isNull ? null : wrappedResult.data;
+    Uint8List? result;
+    if (!wrappedResult.isNull) {
+      result = wrappedResult.data;
+      registerFinalizer(result, wrappedResult.ref._data);
+    }
+
     free(msgPtr);
     free(wrappedResult);
 

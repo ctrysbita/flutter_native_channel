@@ -115,14 +115,14 @@ Java_io_xdea_flutter_1native_1channel_ConcurrentNativeBinaryMessenger_replyMessa
     free(env->GetDirectBufferAddress(message));
   }
 
-  auto replyMessage = new MessageWrapper;
-  replyMessage->seq = reply_id;
+  auto ret = new MessageWrapper;
+  ret->seq = reply_id;
   if (reply != nullptr) {
-    replyMessage->data =
+    ret->data =
         static_cast<uint8_t *>(env->GetDirectBufferAddress(reply));
-    replyMessage->length = env->GetDirectBufferCapacity(reply);
-    Finalizer::AssociatePointerWithGlobalReference(replyMessage->data, env->NewGlobalRef(reply));
+    ret->length = env->GetDirectBufferCapacity(reply);
+    Finalizer::AssociatePointerWithGlobalReference(ret->data, env->NewGlobalRef(reply));
   }
 
-  Dart_PostInteger_DL(replyPort_, reinterpret_cast<int64_t>(replyMessage));
+  Dart_PostInteger_DL(replyPort_, reinterpret_cast<int64_t>(ret));
 }
