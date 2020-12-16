@@ -20,14 +20,14 @@ class MainActivity : FlutterActivity(), MethodChannel.MethodCallHandler {
 
         // Async, Flutter, Bin
         flutterEngine.dartExecutor.binaryMessenger.setMessageHandler("flutter_bin_channel") { _, reply ->
-            reply.reply(ByteBuffer.wrap(ByteArray(1024 * 1024 * 5)))
+            reply.reply(ByteBuffer.allocateDirect(1024 * 1024 * 5))
         }
 
         // Sync, Native, Bin
         SynchronousNativeBinaryMessenger.setMessageHandler(1234,
                 object : SynchronousNativeBinaryMessenger.SynchronousBinaryMessageHandler {
                     override fun onMessage(message: ByteBuffer?): ByteBuffer? {
-                        return ByteBuffer.wrap(ByteArray(1024 * 1024 * 5))
+                        return ByteBuffer.allocateDirect(1024 * 1024 * 5)
                     }
                 }
         )
@@ -42,7 +42,7 @@ class MainActivity : FlutterActivity(), MethodChannel.MethodCallHandler {
 
         // Async, Native, Bin
         ConcurrentNativeBinaryMessenger.setMessageHandler(1234) { _, reply ->
-            reply.reply(ByteBuffer.wrap(ByteArray(1024 * 1024 * 5)))
+            reply.reply(ByteBuffer.allocateDirect(1024 * 1024 * 5))
         }
 
         // Async, Native, Method

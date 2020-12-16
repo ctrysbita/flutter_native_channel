@@ -24,7 +24,8 @@ std::unordered_map<uint8_t *, jobject> Finalizer::global_references_;
 void Finalizer::ReleaseGlobalReferenceByPointer(uint8_t *ptr) {
   auto object = global_references_[ptr];
   if (object != nullptr) {
-    JniEnv()->DeleteGlobalRef(object);
+    JniEnv env;
+    env->DeleteGlobalRef(object);
     global_references_.erase(ptr);
   }
 }

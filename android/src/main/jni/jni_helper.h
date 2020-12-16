@@ -40,6 +40,10 @@ class JniEnv {
 };
 
 class JniHelper {
+ private:
+  static jclass system_class_;
+  static jmethodID gc_method_;
+
  public:
   static JavaVM *jvm_;
 
@@ -48,4 +52,6 @@ class JniHelper {
 
   static void StoreClassLoader();
   static jclass FindClass(JniEnv &env, const char *name);
+  static void StoreGCMethod();
+  static void TriggerGC(JniEnv &env);
 };
