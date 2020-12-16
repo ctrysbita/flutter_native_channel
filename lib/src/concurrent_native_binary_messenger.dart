@@ -102,7 +102,11 @@ class ConcurrentNativeBinaryMessenger {
       _resultCompleters.remove(seq)?.complete(null);
     } else {
       var data = wrappedResult.data;
-      registerFinalizer(data, wrappedResult.ref._data);
+      registerFinalizer(
+        data,
+        wrappedResult.ref._data,
+        wrappedResult.ref.length,
+      );
       _resultCompleters.remove(seq)?.complete(data);
     }
 

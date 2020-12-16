@@ -59,7 +59,11 @@ class SynchronousNativeBinaryMessenger {
     Uint8List? result;
     if (!wrappedResult.isNull) {
       result = wrappedResult.data;
-      registerFinalizer(result, wrappedResult.ref._data);
+      registerFinalizer(
+        result,
+        wrappedResult.ref._data,
+        wrappedResult.ref.length,
+      );
     }
 
     free(msgPtr);

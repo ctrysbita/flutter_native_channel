@@ -21,5 +21,5 @@ final nativeLib = Platform.isIOS
     : DynamicLibrary.open('libflutter_native_channel.so');
 
 final registerFinalizer = nativeLib.lookupFunction<
-    Void Function(Handle, Pointer<Uint8>),
-    void Function(Object, Pointer<Uint8>)>("RegisterFinalizer");
+    Void Function(Handle, Pointer<Uint8>, IntPtr),
+    void Function(Object, Pointer<Uint8>, int)>("RegisterFinalizer");

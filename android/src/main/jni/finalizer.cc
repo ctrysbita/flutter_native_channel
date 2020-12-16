@@ -34,6 +34,8 @@ void Finalizer::DartFinalizer(void *isolate_callback_data, void *peer) {
   ReleaseGlobalReferenceByPointer((uint8_t *) peer);
 }
 
-FFI_EXPORT void RegisterFinalizer(Dart_Handle handle, uint8_t *ptr) {
-  Dart_NewWeakPersistentHandle_DL(handle, ptr, 8, Finalizer::DartFinalizer);
+FFI_EXPORT void RegisterFinalizer(Dart_Handle handle,
+                                  uint8_t *ptr,
+                                  intptr_t external_allocation_size) {
+  Dart_NewWeakPersistentHandle_DL(handle, ptr, external_allocation_size, Finalizer::DartFinalizer);
 }
