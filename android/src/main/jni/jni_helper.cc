@@ -52,17 +52,21 @@ jclass JniHelper::FindClass(JniEnv &env, const char *name) {
       env->NewStringUTF(name)));
 }
 
-jclass JniHelper::system_class_;
+jclass JniHelper::runtime_class_;
+jobject JniHelper::runtime_;
 jmethodID JniHelper::gc_method_;
 
 void JniHelper::StoreGCMethod() {
   JniEnv env;
-  system_class_ = (jclass) env->NewGlobalRef(FindClass(env, "java/lang/System"));
-  gc_method_ = env->GetStaticMethodID(system_class_, "gc", "()V");
+  runtime_class_ = (jclass) env->NewGlobalRef(FindClass(env, "java/lang/Runtime"));
+  auto current_runtime_field =
+      env->GetStaticFieldID(runtime_class_, "currentRuntime", "Ljava/lang/Runtime;");
+  runtime_ = env->NewGlobalRef(env->GetStaticObjectField(runtime_class_, current_runtime_field));
+  gc_method_ = env->GetMethodID(runtime_class_, "gc", "()V");
 }
 
 void JniHelper::TriggerGC(JniEnv &env) {
-  env->CallStaticVoidMethod(system_class_, gc_method_);
+  env->CallVoidMethod(runtime_, gc_method_);
 }
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {

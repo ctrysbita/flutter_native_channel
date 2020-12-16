@@ -27,6 +27,7 @@ void Finalizer::ReleaseGlobalReferenceByPointer(uint8_t *ptr) {
     JniEnv env;
     env->DeleteGlobalRef(object);
     global_references_.erase(ptr);
+    JniHelper::TriggerGC(env);
   }
 }
 

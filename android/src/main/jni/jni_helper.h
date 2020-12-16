@@ -41,7 +41,8 @@ class JniEnv {
 
 class JniHelper {
  private:
-  static jclass system_class_;
+  static jclass runtime_class_;
+  static jobject runtime_;
   static jmethodID gc_method_;
 
  public:
