@@ -13,6 +13,8 @@ class MainActivity : FlutterActivity(), MethodChannel.MethodCallHandler {
     private lateinit var synchronousChannel: SynchronousMethodChannel
     private lateinit var concurrentMethodChannel: ConcurrentMethodChannel
 
+    private var size = 1024 * 1024
+
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "flutter_native_channel_example")
@@ -20,14 +22,14 @@ class MainActivity : FlutterActivity(), MethodChannel.MethodCallHandler {
 
         // Async, Flutter, Bin
         flutterEngine.dartExecutor.binaryMessenger.setMessageHandler("flutter_bin_channel") { _, reply ->
-            reply.reply(ByteBuffer.allocateDirect(1024 * 1024 * 5))
+            reply.reply(ByteBuffer.allocateDirect(size))
         }
 
         // Sync, Native, Bin
         SynchronousNativeBinaryMessenger.setMessageHandler(1234,
                 object : SynchronousNativeBinaryMessenger.SynchronousBinaryMessageHandler {
                     override fun onMessage(message: ByteBuffer?): ByteBuffer? {
-                        return ByteBuffer.allocateDirect(1024 * 1024 * 5)
+                        return ByteBuffer.allocateDirect(size)
                     }
                 }
         )
@@ -36,22 +38,28 @@ class MainActivity : FlutterActivity(), MethodChannel.MethodCallHandler {
         synchronousChannel = SynchronousMethodChannel("flutter_native_channel_example")
         synchronousChannel.setMethodCallHandler(object : SynchronousMethodChannel.MethodCallHandler {
             override fun onMethodCall(call: MethodCall): SynchronousResult {
-                return SynchronousResult.success(ByteArray(1024 * 1024 * 5))
+                return SynchronousResult.success(ByteArray(size))
             }
         })
 
-        // Async, Native, Bin
+        // Concurrent, Native, Bin
         ConcurrentNativeBinaryMessenger.setMessageHandler(1234) { _, reply ->
-            reply.reply(ByteBuffer.allocateDirect(1024 * 1024 * 5))
+            reply.reply(ByteBuffer.allocateDirect(size))
         }
 
-        // Async, Native, Method
+        // Concurrent, Native, Method
         concurrentMethodChannel = ConcurrentMethodChannel("flutter_native_channel_example")
         concurrentMethodChannel.setMethodCallHandler(this)
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+        if (call.method == "s") {
+            size = call.arguments as Int * 1024
+            result.success(null)
+            return
+        }
+
         // Async, Flutter, Method
-        result.success(ByteArray(1024 * 1024 * 5))
+        result.success(ByteArray(size))
     }
 }
