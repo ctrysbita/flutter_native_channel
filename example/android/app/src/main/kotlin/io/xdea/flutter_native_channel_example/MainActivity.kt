@@ -53,13 +53,15 @@ class MainActivity : FlutterActivity(), MethodChannel.MethodCallHandler {
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
-        if (call.method == "s") {
-            size = call.arguments as Int * 1024
-            result.success(null)
-            return
+        when (call.method) {
+            // Async, Flutter, Method
+            "MTD" -> result.success(ByteArray(size))
+            "s" -> {
+                size = call.arguments as Int * 1024
+                result.success(null)
+                return
+            }
+            "g" -> Runtime.getRuntime().gc()
         }
-
-        // Async, Flutter, Method
-        result.success(ByteArray(size))
     }
 }

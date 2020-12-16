@@ -119,6 +119,10 @@ class _MyAppState extends State<MyApp> {
             Text('via sync native channel: $syncChannelTs us'),
             Text('via async native bin: $asyncBinTs us'),
             Text('via async native channel: $asyncChannelTs us'),
+            RaisedButton(
+              child: Text('Force GC'),
+              onPressed: () => channel.invokeMethod<Null>('g'),
+            ),
           ],
         ),
         floatingActionButton: FloatingActionButton(
