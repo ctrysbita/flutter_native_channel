@@ -22,6 +22,7 @@
 #include <vector>
 
 #include "dart/dart_api_dl.h"
+#include "finalizer.h"
 #include "jni_helper.h"
 
 static jclass handle_message_from_dart_class_ = nullptr;
@@ -54,7 +55,7 @@ struct TaskMessageWrapper {
 static std::mutex message_queue_mtx_;
 static std::queue<struct TaskMessageWrapper> message_queue_;
 
-[[noreturn]] void SendConcurrentMessageToPlatformWorker() {
+[[noreturn]] static void SendConcurrentMessageToPlatformWorker() {
   while (true) {
     {
       std::unique_lock<std::mutex> lock(cv_mtx_);
@@ -89,6 +90,7 @@ FFI_EXPORT void InitializeChannel(void *data, int64_t replyPort, int64_t message
         "(JLjava/nio/ByteBuffer;J)V");
   }
 
+  // TODO: Dynamic concurrency.
   auto concurrency = std::max(std::thread::hardware_concurrency() / 2, 1u);
   for (unsigned i = 0; i < concurrency; i++) {
     threads_.emplace_back(SendConcurrentMessageToPlatformWorker);
@@ -119,9 +121,8 @@ Java_io_xdea_flutter_1native_1channel_ConcurrentNativeBinaryMessenger_replyMessa
     replyMessage->data =
         static_cast<uint8_t *>(env->GetDirectBufferAddress(reply));
     replyMessage->length = env->GetDirectBufferCapacity(reply);
+    Finalizer::AssociatePointerWithGlobalReference(replyMessage->data, env->NewGlobalRef(reply));
   }
 
   Dart_PostInteger_DL(replyPort_, reinterpret_cast<int64_t>(replyMessage));
-
-  // TODO: Handle GC.
 }

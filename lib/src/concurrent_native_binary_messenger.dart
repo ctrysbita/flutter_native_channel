@@ -20,7 +20,7 @@ import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
 
-import 'dynamic_library.dart';
+import 'common.dart';
 
 final _resultCompleters = HashMap<int, Completer<Uint8List?>>();
 
@@ -98,9 +98,13 @@ class ConcurrentNativeBinaryMessenger {
       'Missing completer while receving result for seq $seq',
     );
 
-    _resultCompleters
-        .remove(seq)
-        ?.complete(wrappedResult.isNull ? null : wrappedResult.data);
+    if (wrappedResult.isNull) {
+      _resultCompleters.remove(seq)?.complete(null);
+    } else {
+      var data = wrappedResult.data;
+      registerFinalizer(data, wrappedResult.ref._data);
+      _resultCompleters.remove(seq)?.complete(data);
+    }
 
     free(wrappedResult);
   }

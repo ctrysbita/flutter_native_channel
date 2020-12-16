@@ -31,7 +31,7 @@ SendSynchronousMessageToPlatform(int64_t channel, uint64_t length,
 
   if (handle_message_from_dart_class_ == nullptr) {
     handle_message_from_dart_class_ =
-        (jclass)env->NewGlobalRef(JniHelper::FindClass(
+        (jclass) env->NewGlobalRef(JniHelper::FindClass(
             env,
             "io/xdea/flutter_native_channel/SynchronousNativeBinaryMessenger"));
     handle_message_from_dart_method_ = env->GetStaticMethodID(

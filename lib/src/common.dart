@@ -19,3 +19,7 @@ import 'dart:io';
 final nativeLib = Platform.isIOS
     ? DynamicLibrary.process()
     : DynamicLibrary.open('libflutter_native_channel.so');
+
+final registerFinalizer = nativeLib.lookupFunction<
+    Void Function(Handle, Pointer<Uint8>),
+    void Function(Object, Pointer<Uint8>)>("RegisterFinalizer");
