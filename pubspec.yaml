@@ -1,7 +1,6 @@
 name: flutter_native_channel
-description: A fast flutter message channel via FFI.
-version: 0.0.1
-author: Jason C.H <ctrysbita@outlook.com>
+description: A fast flutter message channel by using dart FFI and shared memory.
+version: 0.0.3
 homepage: https://github.com/ctrysbita
 
 environment:
