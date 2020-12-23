@@ -61,7 +61,10 @@ class MainActivity : FlutterActivity(), MethodChannel.MethodCallHandler {
                 result.success(null)
                 return
             }
-            "g" -> Runtime.getRuntime().gc()
+            "g" -> {
+                Runtime.getRuntime().gc()
+                result.success(null)
+            }
         }
     }
 }
