@@ -40,8 +40,8 @@ SendSynchronousMessageToPlatform(int64_t channel, uint64_t length,
         "(JLjava/nio/ByteBuffer;)Ljava/nio/ByteBuffer;");
   }
 
-  jobject message = env->NewDirectByteBuffer(data, length);
-  jobject result = env->CallStaticObjectMethod(handle_message_from_dart_class_,
+  auto message = env->NewDirectByteBuffer(data, length);
+  auto result = env->CallStaticObjectMethod(handle_message_from_dart_class_,
                                                handle_message_from_dart_method_,
                                                channel, message);
 
